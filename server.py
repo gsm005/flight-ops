@@ -9,9 +9,8 @@ app = Flask(__name__)
 
 
 @app.route("/flight-details")
-def getflightDetails(flight=None):
-    if flight is None:
-        flight = request.args.get("flight", "6E17")
+def getflightDetails():
+    flight = request.args.get("flight", "6E17")
     return get_flight_details(flight)
 
 def getAllFlightInfo(lat, lon):
@@ -38,23 +37,9 @@ def getFlightSafe():
         lat = positions[0].get("lat", "0")
         lon = positions[0].get("lon", "0")
         
-    return getAllFlightInfo(lat, lon)
-
-# @app.route("/nearest-airports")
-# def getNearestAirports():
-#     lat = request.args.get("lat", "0")
-#     lon = request.args.get("lon", "0")
-#     if lat != "0" and lon != "0":
-#         return get_nearest_airports(lat, lon)
-
-#     flight = request.args.get("flight", "6E17")
-#     flight_details = get_flight_details(flight).get_json()
-
-#     positions = flight_details.get("data", {}).get("positions", [])
-#     if len(positions) > 0:
-#         lat = positions[0].get("lat", "0")
-#         lon = positions[0].get("lon", "0")
-#     return get_nearest_airports(lat, lon)
+    all_flight_info = getAllFlightInfo(lat, lon).get_json()
+    all_flight_info['flight_details'] = flight_details
+    return jsonify(all_flight_info)
 
 if __name__ == "__main__":
     app.run(debug=True)
