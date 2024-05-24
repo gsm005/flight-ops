@@ -1,4 +1,5 @@
 from flask import Flask, request, jsonify
+from datetime import datetime, timezone
 import requests
 import re, time
 
@@ -21,9 +22,10 @@ def get_details(flight_id, airline, flight):
 
 
 def get_flight_id(airline, flight):
-    year = time.strftime("%Y")
-    month = time.strftime("%m")
-    date = time.strftime("%d")
+    now_utc = datetime.now(timezone.utc)
+    year = now_utc.strftime("%Y")
+    month = now_utc.strftime("%m")
+    date = now_utc.strftime("%d")
     
     url = base_url + "/flight-tracker/" + airline + "/" + flight + "?year=" + year + "&month=" + month + "&date=" + date
     response = requests.get(url)

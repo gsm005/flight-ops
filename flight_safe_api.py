@@ -6,14 +6,15 @@ import pandas as pd
 from retry_requests import retry
 import numpy as np
 from sklearn.preprocessing import StandardScaler
-import joblib, requests
+import joblib, requests, os
 
+module_dir = os.path.abspath(os.path.dirname(__file__))
 cache_session = requests_cache.CachedSession(".cache", expire_after=3600)
 retry_session = retry(cache_session, retries=5, backoff_factor=0.2)
 openmeteo = openmeteo_requests.Client(session=retry_session)
-
-model = joblib.load("RandomForest.joblib")
-
+file = os.path.join(module_dir, "RandomForest.joblib")
+#model = joblib.load("RandomForest.joblib")
+model = joblib.load(file)
 
 def preprocess_data(data):
     scaler = StandardScaler()
@@ -42,7 +43,10 @@ def get_flight_safe(lat, lon):
         city_data = { "plus_code": { "compound_code": "Unknown" } }
 
     city = city_data.get("plus_code", {}).get("compound_code", "Unknown")
-    city = city.split(" ", 1)[1]
+    try:
+        city = city.split(" ", 1)[1]
+    except IndexError:
+        city = "Unknown"
 
     url = "https://api.open-meteo.com/v1/forecast"
     params = {

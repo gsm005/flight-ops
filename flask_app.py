@@ -8,6 +8,10 @@ from flight_nearest_airport import get_nearest_airports
 app = Flask(__name__)
 
 
+@app.route("/")
+def hello():
+    return "Check the endpoint!"
+
 @app.route("/flight-details")
 def getflightDetails():
     flight = request.args.get("flight", "6E17")
